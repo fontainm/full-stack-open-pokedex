@@ -47,7 +47,7 @@ jobs:
       - name: Run e2e tests
         run: npm run test:e2e
       - name: Trigger deployment
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name == 'push' && ! contains(join(github.event.commits.*.message), '#skip') }}
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
 
   tag_release:
@@ -56,6 +56,6 @@ jobs:
     steps:
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.67.0
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name == 'push' && ! contains(join(github.event.commits.*.message), '#skip') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
