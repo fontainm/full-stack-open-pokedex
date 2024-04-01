@@ -49,6 +49,24 @@ jobs:
       - name: Trigger deployment
         if: ${{ github.event_name == 'push' && ! contains(join(github.event.commits.*.message), '#skip') }}
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
+      - name: Discord Message Notify
+        uses: appleboy/discord-action@v1.0.0
+        if: ${{ success() }}
+        with:
+          webhook_id: ${{ secrets.WEBHOOK_ID }}
+          webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
+          username: 'GitHub Bot'
+          color: '#14A44D'
+          message: A new version of Pokedex deployed!
+      - name: Discord Message Notify
+        uses: appleboy/discord-action@v1.0.0
+        if: ${{ ! success() }}
+        with:
+          webhook_id: ${{ secrets.WEBHOOK_ID }}
+          webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
+          username: 'GitHub Bot'
+          color: '#DC4C64'
+          message: Build failed!
 
   tag_release:
     needs: [simple_deployment_pipeline]
